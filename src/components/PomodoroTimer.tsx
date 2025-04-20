@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const PomodoroTimer: React.FC = () => {
   const [minutes, setMinutes] = useState(25);
@@ -10,6 +11,9 @@ const PomodoroTimer: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const workSoundRef = useRef<HTMLAudioElement | null>(null);
+  const breakSoundRef = useRef<HTMLAudioElement | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isActive) {
@@ -28,12 +32,20 @@ const PomodoroTimer: React.FC = () => {
               setMinutes(5);
               setSeconds(0);
               setIsWork(false);
-              alert('Work session complete! Take a break.'); // Replace with a more subtle notification
+              breakSoundRef.current?.play();
+              toast({
+                title: "Work session complete!",
+                description: "Take a break.",
+              });
             } else {
               setMinutes(25);
               setSeconds(0);
               setIsWork(true);
-              alert('Break session complete! Get back to work.'); // Replace with a more subtle notification
+              workSoundRef.current?.play();
+              toast({
+                title: "Break session complete!",
+                description: "Get back to work.",
+              });
             }
             setIsActive(true); // Automatically start the next session
           }
@@ -41,7 +53,7 @@ const PomodoroTimer: React.FC = () => {
       }, 1000);
     }
     return () => clearInterval(timerRef.current!);
-  }, [isActive, minutes, seconds, isWork]);
+  }, [isActive, minutes, seconds, isWork, toast]);
 
   const startTimer = () => {
     setIsActive(true);
@@ -73,8 +85,12 @@ const PomodoroTimer: React.FC = () => {
         )}
         <Button variant="outline" onClick={resetTimer}>Reset</Button>
       </div>
+      <audio ref={workSoundRef} src="https://firebasestorage.googleapis.com/v0/b/fir-studio-8819d.appspot.com/o/start_work.mp3?alt=media&token=4dd41b1b-590a-463e-952c-2731a0e0d519" preload="auto" />
+      <audio ref={breakSoundRef} src="https://firebasestorage.googleapis.com/v0/b/fir-studio-8819d.appspot.com/o/start_break.mp3?alt=media&token=685a70e1-124d-4574-b100-26f54817692d" preload="auto" />
     </div>
   );
 };
 
 export default PomodoroTimer;
+
+    
