@@ -74,7 +74,7 @@ const PomodoroTimer: React.FC = () => {
   return (
     <div className="p-4 rounded-lg shadow-md bg-secondary mt-4">
       <h2 className="text-2xl font-semibold mb-2">{isWork ? 'Work Session' : 'Break Session'}</h2>
-      <div className="text-5xl font-bold">
+      <div className="text-5xl font-bold" style={{ fontFamily: 'var(--timer-font)' }}>
         {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
       </div>
       <div className="flex justify-center space-x-4 mt-4">
@@ -92,5 +92,3 @@ const PomodoroTimer: React.FC = () => {
 };
 
 export default PomodoroTimer;
-
-    

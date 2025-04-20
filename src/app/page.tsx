@@ -1,5 +1,7 @@
 import TaskList from '@/components/TaskList';
 import PomodoroTimer from '@/components/PomodoroTimer';
+import FontSelector from '@/components/FontSelector';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function Home() {
   return (
@@ -8,6 +10,8 @@ export default function Home() {
         <h1 className="text-4xl font-bold mt-6">
           PomoFocus
         </h1>
+        <ThemeToggle />
+        <FontSelector />
         <PomodoroTimer />
         <TaskList />
       </main>
