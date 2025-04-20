@@ -1,3 +1,5 @@
+"use client";
+
 import TaskList from '@/components/TaskList';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import FontSelector from '@/components/FontSelector';
