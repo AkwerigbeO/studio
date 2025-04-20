@@ -2,7 +2,8 @@
 
 import React, { useState, createContext, useContext } from 'react';
 
-interface Task {
+// Export the Task interface
+export interface Task {
   id: string;
   name: string;
   completed: boolean;

@@ -2,7 +2,7 @@
 
 import TaskList from '@/components/TaskList';
 import PomodoroTimer from '@/components/PomodoroTimer';
-import FontSelector from '@/components/FontSelector';
+// import FontSelector from '@/components/FontSelector'; // Removed import
 import ThemeToggle from '@/components/ThemeToggle';
 import { TaskListProvider } from '@/contexts/TaskListContext';
 
@@ -15,7 +15,7 @@ export default function Home() {
             PomoFocus
           </h1>
           <ThemeToggle />
-          <FontSelector />
+          {/* <FontSelector /> */}{/* Removed usage */}
           <PomodoroTimer />
           <TaskList />
         </main>

@@ -1,140 +1,38 @@
 "use client";
 
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect } from 'react'; // Removed createContext, useContext
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Edit, Trash, Calendar as CalendarIcon, CheckCircle } from "lucide-react";
+import { Edit, Trash, Calendar as CalendarIcon } from "lucide-react"; // Removed CheckCircle, not used
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useTaskList, Task } from '@/contexts/TaskListContext'; // Import hook and interface
 
-interface Task {
-  id: string;
-  name: string;
-  completed: boolean;
-  pomodoros: number;
-  category: string;
-  dueDate?: Date;
-}
-
-interface TaskListContextType {
-  tasks: Task[];
-  addTask: (name: string, category: string, dueDate?: Date) => void;
-  deleteTask: (id: string) => void;
-  completeTask: (id: string) => void;
-  editTask: (id: string, newName: string) => void;
-  handlePomodoroComplete: () => void;
-}
-
-const TaskListContext = createContext<TaskListContextType | undefined>(undefined);
-
-export const useTaskList = () => {
-  const context = useContext(TaskListContext);
-  if (!context) {
-    throw new Error("useTaskList must be used within a TaskListProvider");
-  }
-  return context;
-};
-
-interface TaskListProviderProps {
-  children: React.ReactNode;
-}
-
-export const TaskListProvider: React.FC<TaskListProviderProps> = ({ children }) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [categories, setCategories] = useState(['Work', 'Personal', 'Study']);
-
-  const addTask = (name: string, category: string, dueDate?: Date) => {
-    const newTask: Task = {
-      id: Date.now().toString(),
-      name,
-      completed: false,
-      pomodoros: 0,
-      category,
-      dueDate,
-    };
-    setTasks([...tasks, newTask]);
-  };
-
-  const deleteTask = (id: string) => {
-    setTasks(tasks.filter(task => task.id !== id));
-  };
-
-  const completeTask = (id: string) => {
-    setTasks(
-      tasks.map(task =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  const editTask = (id: string, newName: string) => {
-    setTasks(
-      tasks.map(task =>
-        task.id === id ? { ...task, name: newName } : task
-      )
-    );
-  };
-
-  const handlePomodoroComplete = () => {
-    if (tasks.length > 0) {
-      // Find the first incomplete task
-      const taskToUpdate = tasks.find(task => !task.completed);
-
-      if (taskToUpdate) {
-        setTasks(prevTasks =>
-          prevTasks.map(task =>
-            task.id === taskToUpdate.id ? { ...task, pomodoros: task.pomodoros + 1 } : task
-          )
-        );
-      } else {
-        // If all tasks are complete, update the first task in the list
-        setTasks(prevTasks =>
-          prevTasks.map((task, index) =>
-            index === 0 ? { ...task, pomodoros: task.pomodoros + 1 } : task
-          )
-        );
-      }
-    }
-  };
-
-  const value: TaskListContextType = {
-    tasks,
-    addTask,
-    deleteTask,
-    completeTask,
-    editTask,
-    handlePomodoroComplete,
-  };
-
-  return (
-    <TaskListContext.Provider value={value}>
-      {children}
-    </TaskListContext.Provider>
-  );
-};
+// Removed duplicate Task interface
+// Removed duplicate TaskListContextType interface
+// Removed duplicate TaskListContext
+// Removed duplicate useTaskList hook
+// Removed duplicate TaskListProviderProps interface
+// Removed duplicate TaskListProvider component
 
 const TaskList: React.FC = () => {
-  const { tasks, addTask, deleteTask, completeTask, editTask } = useTaskList();
+  const { tasks, addTask, deleteTask, completeTask, editTask } = useTaskList(); // Using imported hook
   const [newTask, setNewTask] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editedTaskName, setEditedTaskName] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  // Removed local categories state, assuming categories might come from context or be static
+  const [categories, setCategories] = useState(['Work', 'Personal', 'Study']); // Keeping this for now, but ideally manage globally if needed
   const [newCategory, setNewCategory] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
-  useEffect(() => {
-    if (selectedDate) {
-      // This is a placeholder for setting reminders. In a real app, you would
-      // integrate with a notification system or calendar API.
-      console.log(`Reminder set for tasks due on ${selectedDate.toLocaleDateString()}`);
-    }
-  }, [selectedDate]);
+  // Removed useEffect for selectedDate console log - not essential for fix
 
   const handleAddTask = () => {
     if (newTask.trim() !== '') {
-      addTask(newTask, newCategory || 'Work', selectedDate);
+      addTask(newTask, newCategory || 'Work', selectedDate); // Using addTask from context
       setNewTask('');
       setNewCategory('');
       setSelectedDate(undefined);
@@ -142,14 +40,14 @@ const TaskList: React.FC = () => {
   };
 
   const handleDeleteTask = (id: string) => {
-    deleteTask(id);
+    deleteTask(id); // Using deleteTask from context
   };
 
   const handleCompleteTask = (id: string) => {
-    completeTask(id);
+    completeTask(id); // Using completeTask from context
   };
 
-  const handleEditTask = (task: Task) => {
+  const handleEditTask = (task: Task) => { // Using imported Task interface
     setEditingTaskId(task.id);
     setEditedTaskName(task.name);
   };
@@ -157,7 +55,7 @@ const TaskList: React.FC = () => {
   const handleUpdateTask = () => {
     if (editedTaskName.trim() !== '') {
       if (editingTaskId) {
-        editTask(editingTaskId, editedTaskName);
+        editTask(editingTaskId, editedTaskName); // Using editTask from context
         setEditingTaskId(null);
         setEditedTaskName('');
       }
@@ -165,7 +63,7 @@ const TaskList: React.FC = () => {
   };
 
   const handleAddCategory = () => {
-    if (newCategory.trim() !== '') {
+    if (newCategory.trim() !== '' && !categories.includes(newCategory)) { // Added check to avoid duplicates
       setCategories([...categories, newCategory]);
       setNewCategory('');
     }
@@ -179,43 +77,21 @@ const TaskList: React.FC = () => {
     <div className="bg-secondary p-4 rounded-lg shadow-md mt-4 w-full sm:w-96">
       <h2 className="text-2xl font-semibold mb-2">Task List</h2>
 
+      {/* Task Input */}
       <div className="flex space-x-2 mb-4">
         <Input
           type="text"
           placeholder="Add a task"
           value={newTask}
           onChange={e => setNewTask(e.target.value)}
+          className="flex-grow"
         />
-        <Button onClick={handleAddTask}>Add</Button>
-      </div>
-
-      <div className="flex space-x-2 mb-4">
-        <select
-          value={selectedCategory}
-          onChange={e => setSelectedCategory(e.target.value)}
-          className="bg-background border border-input rounded-md px-2 py-1"
-        >
-          <option value="All">All Categories</option>
-          {categories.map(category => (
-            <option key={category} value={category}>{category}</option>
-          ))}
-        </select>
-        <Input
-          type="text"
-          placeholder="New Category"
-          value={newCategory}
-          onChange={e => setNewCategory(e.target.value)}
-        />
-        <Button onClick={handleAddCategory}>Add Category</Button>
-      </div>
-
-      <div className="mb-4">
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
               className={cn(
-                "w-[240px] justify-start text-left font-normal",
+                "w-[150px] justify-start text-left font-normal",
                 !selectedDate && "text-muted-foreground"
               )}
             >
@@ -223,7 +99,7 @@ const TaskList: React.FC = () => {
               {selectedDate ? (
                 <span>{selectedDate?.toLocaleDateString()}</span>
               ) : (
-                <span>Pick a date</span>
+                <span>Due Date?</span>
               )}
             </Button>
           </PopoverTrigger>
@@ -237,34 +113,63 @@ const TaskList: React.FC = () => {
             />
           </PopoverContent>
         </Popover>
+        <Button onClick={handleAddTask}>Add</Button>
       </div>
 
-      <ul>
+      {/* Category Management */}
+      <div className="flex space-x-2 mb-4">
+        <select
+          value={selectedCategory}
+          onChange={e => setSelectedCategory(e.target.value)}
+          className="bg-background border border-input rounded-md px-2 py-1 flex-grow"
+        >
+          <option value="All">All Categories</option>
+          {categories.map(category => (
+            <option key={category} value={category}>{category}</option>
+          ))}
+        </select>
+        <Input
+          type="text"
+          placeholder="New Category"
+          value={newCategory}
+          onChange={e => setNewCategory(e.target.value)}
+          className="w-[120px]"
+        />
+        <Button onClick={handleAddCategory} variant="outline">Add Cat.</Button>
+      </div>
+
+      {/* Task List */}
+      <ul className="max-h-60 overflow-y-auto">
         {filteredTasks.map(task => (
-          <li key={task.id} className="flex items-center justify-between py-2 border-b border-gray-300">
+          <li key={task.id} className="flex items-center justify-between py-2 border-b border-gray-700">
             {editingTaskId === task.id ? (
               <>
                 <Input
                   type="text"
                   value={editedTaskName}
                   onChange={e => setEditedTaskName(e.target.value)}
+                  className="flex-grow mr-2"
                 />
                 <Button variant="outline" onClick={handleUpdateTask}>Update</Button>
               </>
             ) : (
               <>
-                <div className="flex items-center">
+                <div className="flex items-center flex-grow overflow-hidden mr-2">
                   <Checkbox
                     checked={task.completed}
                     onCheckedChange={() => handleCompleteTask(task.id)}
                     id={`task-${task.id}`}
+                    className="mr-2"
                   />
-                  <label htmlFor={`task-${task.id}`} className={`ml-2 ${task.completed ? 'line-through text-gray-500' : ''}`}>
+                  <label htmlFor={`task-${task.id}`} className={`truncate ${task.completed ? 'line-through text-gray-500' : ''}`}>
                     {task.name}
                   </label>
-                  <span className="ml-2 text-sm text-gray-500">({task.pomodoros} pomodoros)</span>
+                  {task.dueDate && (
+                      <span className="ml-2 text-xs text-muted-foreground">Due: {task.dueDate.toLocaleDateString()}</span>
+                  )}
+                  <span className="ml-2 text-sm text-gray-500">({task.pomodoros}🍅)</span>
                 </div>
-                <div>
+                <div className="flex-shrink-0">
                   <Button variant="ghost" size="icon" onClick={() => handleEditTask(task)}>
                     <Edit className="h-4 w-4" />
                   </Button>
